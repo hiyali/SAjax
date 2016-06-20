@@ -1,8 +1,7 @@
 
 /*!
 *
-* from:
-https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise
+* from: https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise
 * optimize by: Salam Xiyali
 *
 */
@@ -10,13 +9,13 @@ let $ajax = (url) => {
   let initXMLHttpRequest = () =>
     window.XMLHttpRequest ?
     new XMLHttpRequest() : //code for IE7,firefox chrome and above
-  new ActiveXObject("Microsoft.XMLHTTP"); //code for Internet Explorer
+    new ActiveXObject("Microsoft.XMLHTTP"); //code for Internet Explorer
 
   const ajax = (method, url, args) => new Promise( function (resolve, reject) {
     let client = initXMLHttpRequest();
     let uri = url;
 
-    console.log(method, url, args)
+    console.log('Methoh:', method, ' Url:', url, ' Args:', args || '')
 
     if (args &&
         (method === 'GET' || method === 'POST' || method === 'PUT')) {
@@ -41,15 +40,18 @@ let $ajax = (url) => {
 
     client.onload = function () {
       if (this.status >= 200 && this.status < 300) {
-        let data = JSON.parse(this.response)
-        resolve(data);
+        let { status, response } = this;
+        let data = JSON.parse(response);
+        resolve({data, status});
       } else {
-        reject(this.statusText);
+        let { statusText, status } = this;
+        reject({statusText, status});
       }
     }
 
     client.onerror = function () {
-      reject(this.statusText);
+      let { statusText, status } = this;
+      reject({statusText, status});
     }
   })
 
@@ -74,11 +76,38 @@ module.exports = {
     return str.join("&");
   },
 
+  parse: (queryStr) => {
+    var query = {};
+    var a = queryStr.substr(1).split('&');
+    for (var i = 0; i < a.length; i++) {
+      var b = a[i].split('=');
+      query[decodeURIComponent(b[0])] = decodeURIComponent(b[1] || '');
+    }
+    return query;
+  },
+
   extend: (obj) => JSON.parse(JSON.stringify(obj)),
 
   callbackParseData: (callback) => (_data) => {
     var data = JSON.parse(_data);
     callback(data);
+  },
+
+  deprecated_post_file: (url, _data, successCallback) => {
+    var tmpCallback = function (data, textStatus, jqXHR) {
+      var mesege = Translator(data.messege);
+      alert(mesege);
+      window.location.reload();
+    }
+    successCallback = successCallback ? successCallback : tmpCallback;
+
+    // delete _data['_links'];
+    if( !_data['parentId'] )
+      delete _data['parentId'];
+
+    minAjax({
+      type: "POST_FILE",
+    });
   },
 
   ajax: $ajax
