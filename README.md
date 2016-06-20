@@ -11,11 +11,11 @@ Utils.ajax('/api/getsome')
   size: 15
 })
 .then(function(res){
-	let { data, status } = res;
+  let { data, status } = res;
   console.info(data, status)
 })
 .catch(function(err){
-	let { statusText, status } = err;
+  let { statusText, status } = err;
   console.warn(statusText, status)
 })
 
