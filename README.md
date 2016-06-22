@@ -16,7 +16,7 @@ Utils.ajax('/api/getsome')
 })
 .catch(function(err){
   let { statusText, status } = err;
-  console.warn(statusText, status)
+  console.warn(err, statusText, status) // before your code running perfect, don't remove this.
 })
 
 ...
