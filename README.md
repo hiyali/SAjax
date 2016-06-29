@@ -11,17 +11,18 @@ Utils.ajax('/api/getsome')
   size: 15
 })
 .then(function(res){
-	let { data, status } = res;
+  let { data, status } = res;
   console.info(data, status)
 })
 .catch(function(err){
-	let { statusText, status } = err;
-  console.warn(statusText, status)
+  let { statusText, status } = err;
+  console.warn(err, statusText, status) // before your code running perfect, don't remove this.
 })
 
 ...
 
+Utils.isExist(null || undefined || '') // => false
 Utils.parse('?a=2&b=3') // => {a:2, b:3}
 Utils.param({a:2, b:3}) // => 'a=2&b=3'
-Utils.extend(a) // deep copy
+Utils.extend(a) // simple deep copy
 ```
