@@ -1,8 +1,8 @@
-
 /*!
 *
 * from: https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise
 * optimize by: Salam Xiyali
+* Maxcrit Inc.
 *
 */
 let $ajax = (url) => {
@@ -17,9 +17,7 @@ let $ajax = (url) => {
 
     console.log('Methoh:', method, ' Url:', url, ' Args:', args || '')
 
-    if (args &&
-        (method === 'GET' || method === 'POST' || method === 'PUT')) {
-
+    if (args){
       uri += '?';
       let argcount = 0;
       for (var key in args) {
@@ -32,16 +30,38 @@ let $ajax = (url) => {
       }
     }
 
-    client.open(method, uri);
+    switch(method){
+      case 'GET':
+        client.open(method, uri);
+        client.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        client.send();
+        break;
+      case 'POST':
+        client.open(method, url);
+        client.setRequestHeader("Content-type", "application/json;charset=UTF-8");
+        client.send(JSON.stringify(args));
+        break;
+      case 'POST_FILE':
+        client.open(method, url);
+        client.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
+        client.send(args);
+        break;
+      case 'DELETE':
+        client.open(method, url);
+        client.send();
+        break;
+    }
     // client.setRequestHeader("Content-type", "application/json");
-    // client.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
-    client.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    client.send();
 
     client.onload = function () {
       if (this.status >= 200 && this.status < 300) {
         let { status, response } = this;
-        let data = JSON.parse(response);
+        let data = {};
+        if(this.status === 204){
+          data = {success: true}
+        }else{
+          data = JSON.parse(response);
+        }
         resolve({data, status});
       } else {
         let { statusText, status } = this;
@@ -60,7 +80,7 @@ let $ajax = (url) => {
     'get': (args) => ajax('GET', url, args),
     'post': (args) => ajax('POST', url, args),
     'put': (args) => ajax('PUT', url, args),
-    'delete': (args) => ajax('DELETE', url, args)
+    '_delete': (args) => ajax('DELETE', url, args)
   };
 };
 
@@ -87,28 +107,6 @@ module.exports = {
   },
 
   extend: (obj) => JSON.parse(JSON.stringify(obj)),
-
-  callbackParseData: (callback) => (_data) => {
-    var data = JSON.parse(_data);
-    callback(data);
-  },
-
-  deprecated_post_file: (url, _data, successCallback) => {
-    var tmpCallback = function (data, textStatus, jqXHR) {
-      var mesege = Translator(data.messege);
-      alert(mesege);
-      window.location.reload();
-    }
-    successCallback = successCallback ? successCallback : tmpCallback;
-
-    // delete _data['_links'];
-    if( !_data['parentId'] )
-      delete _data['parentId'];
-
-    minAjax({
-      type: "POST_FILE",
-    });
-  },
 
   ajax: $ajax
 }
