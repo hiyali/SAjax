@@ -5,6 +5,7 @@ A simple javascript ajax (ES6 and some utils)
 ```javascript
 import Utils from './Utils.js'
 
+// same way to post, put, _delete
 Utils.ajax('/api/getsome')
 .get({
   page: 1,
