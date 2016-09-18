@@ -43,6 +43,6 @@ Utils.cookie('cookie_name')._delete() // delete cookie
 Utils.isExist(null || undefined || '') // => false
 Utils.parse('?a=2&b=3') // => {a:2, b:3}
 Utils.param({a:2, b:3}) // => 'a=2&b=3'
-let b = Utils.extend(a) // b is deep copied from a
+let b = Utils.extend(a) // b deep copied from a
 
 ```
