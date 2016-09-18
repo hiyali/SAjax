@@ -1,8 +1,8 @@
 /*!
 *
-* from: https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise
+* from:
+https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise
 * optimize by: Salam Xiyali
-* Maxcrit Inc.
 *
 */
 let $ajax = (url) => {
@@ -15,7 +15,7 @@ let $ajax = (url) => {
     let client = initXMLHttpRequest();
     let uri = url;
 
-    console.log('Methoh:', method, ' Url:', url, ' Args:', args || '')
+    console.log('Method:', method, ' Url:', url, ' Args:', args || '')
 
     if (args){
       uri += '?';
@@ -41,6 +41,11 @@ let $ajax = (url) => {
         client.setRequestHeader("Content-type", "application/json;charset=UTF-8");
         client.send(JSON.stringify(args));
         break;
+      case 'PUT':
+        client.open(method, url);
+        client.setRequestHeader("Content-type", "application/json;charset=UTF-8");
+        client.send(JSON.stringify(args));
+        break;
       case 'POST_FILE':
         client.open(method, url);
         client.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
@@ -48,6 +53,9 @@ let $ajax = (url) => {
         break;
       case 'DELETE':
         client.open(method, url);
+        if (args && args.hasOwnProperty('_token') ){
+          client.setRequestHeader("X-CSRF-Token", args["_token"]);
+        }
         client.send();
         break;
     }
@@ -57,11 +65,8 @@ let $ajax = (url) => {
       if (this.status >= 200 && this.status < 300) {
         let { status, response } = this;
         let data = {};
-        if(this.status === 204){
-          data = {success: true}
-        }else{
-          data = JSON.parse(response);
-        }
+        // data = {success: true}
+        data = JSON.parse(response);
         resolve({data, status});
       } else {
         let { statusText, status } = this;
@@ -84,7 +89,26 @@ let $ajax = (url) => {
   };
 };
 
-module.exports = {
+let $cookie = (name) =>{
+  function getCookie(name) {
+      var v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+      return v ? v[2] : null;
+  }
+  function setCookie(name, value, days) {
+      var d = new Date;
+      d.setTime(d.getTime() + 24*60*60*1000*days);
+      document.cookie = name + "=" + value + ";path=/;expires=" + d.toGMTString();
+  }
+  function deleteCookie(name) { setCookie(name, '', -1); }
+
+  return {
+    'get': () => getCookie(name),
+    'set': (value, days=7) => setCookie(name, value, days),
+    '_delete': () => deleteCookie(name)
+  }
+}
+
+export default {
   isExist: (s) => s !== null && s !== "" && s !== undefined,
 
   param: (obj) => {
@@ -108,6 +132,14 @@ module.exports = {
 
   extend: (obj) => JSON.parse(JSON.stringify(obj)),
 
-  ajax: $ajax
+  callbackParseData: (callback) => (_data) => {
+    var data = JSON.parse(_data);
+    callback(data);
+  },
+
+  ajax: $ajax,
+
+  cookie: $cookie
+
 }
 
