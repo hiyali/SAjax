@@ -1,5 +1,5 @@
 # SAjax
-A simple javascript ajax (ES6 and some utils)
+Simple Ajax (ES6 and some utils)
 
 1. Ajax (get / post / put / _delete)
 2. Cookie (get / set / _delete)
