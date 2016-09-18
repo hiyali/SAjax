@@ -6,6 +6,8 @@ A simple javascript ajax (ES6 and some utils)
 3. Other (isExist / param / parse / extend ...)
 
 # Usage
+
+### Ajax
 ```javascript
 import Utils from './Utils.js'
 
@@ -24,16 +26,23 @@ Utils.ajax('/api/getsome')
   console.warn(err, statusText, status) // before your code running perfect, don't remove this.
 })
 
-...
+```
+
+### Cookie
+```javascript
 
 let a_cookie = Utils.cookie('cookie_name').get() // get cookie
 Utils.cookie('cookie_name').set(action.data) // set cookie
 Utils.cookie('cookie_name')._delete() // delete cookie
 
-...
+```
+
+### Some Utils
+```javascript
 
 Utils.isExist(null || undefined || '') // => false
 Utils.parse('?a=2&b=3') // => {a:2, b:3}
 Utils.param({a:2, b:3}) // => 'a=2&b=3'
 Utils.extend(a) // simple deep copy
+
 ```
